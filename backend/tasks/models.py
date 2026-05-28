@@ -1,11 +1,18 @@
 from django.db import models
 from django.utils import timezone
-
+from django.conf import settings
 
 class Project(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='projects'
+    )
 
     def __str__(self):
         return self.name
@@ -30,6 +37,23 @@ class Task(models.Model):
     deadline = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='tasks'
+    )
+    attachment = models.FileField(
+        upload_to='task_attachments/%Y/%m/%d/',
+        null=True,
+        blank=True
+    )
+    image = models.ImageField(
+        upload_to='task_images/%Y/%m/%d/',
+        null=True,
+        blank=True
+    )
 
     @property
     def is_overdue(self):
